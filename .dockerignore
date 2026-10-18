@@ -1,0 +1,10 @@
+.git
+.gitignore
+*.py[cod]
+.ipynb_checkpoints/
+.env
+workspace
+notebooks
+labextension/node_modules
+labextension/_build
+**/__pycache__

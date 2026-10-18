@@ -1,0 +1,69 @@
+{
+  "schema_version": "1.0",
+  "questions": [
+    {
+      "id": "sysml_definition_vs_usage",
+      "lesson": "Day 3",
+      "topic": "SysML definitions vs usages",
+      "match_keywords": ["part def", "definition", "usage", "reusable"],
+      "question": "Would this concept element be a reusable part definition or a usage in this product configuration, and why?",
+      "conceptual_indicators": ["definition describes a reusable kind", "usage identifies an occurrence in a configuration", "rationale refers to model intent"]
+    },
+    {
+      "id": "requirements_and_criteria",
+      "lesson": "Day 3",
+      "topic": "requirements and feasibility criteria",
+      "match_keywords": ["requirement", "criterion", "criteria", "feasibility", "assumption"],
+      "question": "Which observable result would give evidence that this feasibility criterion is met?",
+      "conceptual_indicators": ["criterion is observable or testable", "distinguishes assumption from evidence", "identifies a relevant scenario"]
+    },
+    {
+      "id": "logical_structure",
+      "lesson": "Day 3",
+      "topic": "logical structure",
+      "match_keywords": ["logical", "responsibility", "structure", "interface"],
+      "question": "What responsibility belongs to this logical element, and how does it relate to its neighbor?",
+      "conceptual_indicators": ["describes capability without premature vendor choice", "explains relationship or interface", "connects to product value"]
+    },
+    {
+      "id": "behavior_modeling",
+      "lesson": "Day 3",
+      "topic": "behavior and interaction",
+      "match_keywords": ["behavior", "action", "state", "interaction"],
+      "question": "What changes or interaction should the model show when the user performs this action?",
+      "conceptual_indicators": ["identifies trigger and outcome", "distinguishes behavior from structure", "connects behavior to scenario"]
+    },
+    {
+      "id": "minimal_specification",
+      "lesson": "Day 3",
+      "topic": "minimum specification",
+      "match_keywords": ["specification", "minimum", "qualify", "capability"],
+      "question": "What is the minimum behavior or property a later realization must provide to count as meeting this concept?",
+      "conceptual_indicators": ["specification is testable", "preserves implementation freedom", "links back to a concept element"]
+    },
+    {
+      "id": "concept_implementation_boundary",
+      "lesson": "Day 3 to Day 4",
+      "topic": "concept vs implementation",
+      "match_keywords": ["raspberry pi", "implementation", "technology", "logical", "abstract", "concept"],
+      "question": "Does naming this Raspberry Pi describe a product requirement or a candidate implementation, and where should we keep it for now?",
+      "conceptual_indicators": ["separates what from how", "places candidate in a separate realization note", "can justify a technology-mandating requirement"]
+    },
+    {
+      "id": "poc_evidence",
+      "lesson": "Day 4",
+      "topic": "PoC evidence",
+      "match_keywords": ["evidence", "test", "datasheet", "source", "candidate", "poc"],
+      "question": "Does this datasheet show that the complete PoC works, or only support one component capability? What remains unverified?",
+      "conceptual_indicators": ["distinguishes specification from integrated test", "identifies evidence source and scope", "names a missing integration experiment"]
+    },
+    {
+      "id": "feasibility_iteration",
+      "lesson": "Day 4",
+      "topic": "feasibility and iteration",
+      "match_keywords": ["experiment", "iterate", "gap", "refine", "next"],
+      "question": "Which unresolved gap would you test first, and what result would change your next design decision?",
+      "conceptual_indicators": ["selects a minimal experiment", "states observable result", "connects outcome to an assumption or iteration"]
+    }
+  ]
+}
