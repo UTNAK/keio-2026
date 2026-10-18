@@ -3,7 +3,7 @@
     <td align="left" valign="middle">
       <strong>Agentic Product Concept Modeling 2026</strong><br>
       Laurent Balmelli, Hidekazu Nishimura<br>
-      vers 2, 18/10/26
+      vers 4, 19/10/26
     </td>
     <td align="right" valign="middle">
       <img src="./docs/keio-logo.png" alt="Keio University" width="140">
@@ -16,6 +16,10 @@
 # Course workspace and getting started
 
 Use this repository to run the course notebooks, create SysML v2 models, and work with the SysML Design Coach. The course environment runs locally in Docker; your notebooks and models stay in your local workspace unless you choose to share them.
+
+## Course materials
+
+The entire `classes/` directory is included in this repository. Start with the [Day 1 class material](classes/day1/Agentic_Product_Concept_Modeling_2026-Day1.pdf); open it in your browser or download it for class.
 
 ## Current tooling
 
