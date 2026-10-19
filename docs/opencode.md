@@ -3,7 +3,7 @@
     <td align="left" valign="middle">
       <strong>Agentic Product Concept Modeling 2026</strong><br>
       Laurent Balmelli, Hidekazu Nishimura<br>
-      vers 10, 18/10/26
+      vers 12, 19/10/26
     </td>
     <td align="right" valign="middle">
       <img src="./keio-logo.png" alt="Keio University" width="140">
@@ -82,11 +82,11 @@ Try these prompts one at a time:
 
 > If `KeioViews::completeVehicleModel` is available in this notebook's OpenSysML session, add a code cell below the selected cell containing `%render KeioViews::completeVehicleModel mermaid` and run it in this notebook's existing kernel. Report the actual output; if the view is not available, stop and explain.
 
-Review any cell change and output in the notebook. Step 1 allows Jupyter MCP tools to edit or execute live cells without a guaranteed separate preview and approval for each action. Ask for suggestions without edits when you want a read-only answer. Mandatory preapproval for every edit and execution is optional Step 2 work.
+Review any cell change and output in the notebook. The course OpenCode config automatically allows the Jupyter MCP `execute_command` tool so kernel commands do not ask for approval on every call. A specific student request still defines what the coach should run; this permission is not a guarantee that every execution is appropriate. Ask for suggestions without edits when you want a read-only answer.
 
 ## 6. Model files, notebook history, and permissions
 
-Create new `.sysml` files in `workspace/models/` with distinct names. The folder appears as `models/` in Jupyter's file browser and is available at `/home/keio/work/models` for model loading. Copy reference models from `samples/` into `models/` before editing. The course OpenCode config asks before generic edits and shell commands and denies direct `.ipynb` file edits; notebook changes should use MCP. OpenCode merges config sources, so a project or inline config can override these defaults. They are not an enforced security boundary and do not guarantee control over notebook MCP actions.
+Create new `.sysml` files in `workspace/models/` with distinct names. The folder appears as `models/` in Jupyter's file browser and is available at `/home/keio/work/models` for model loading. Copy reference models from `samples/` into `models/` before editing. The course OpenCode config allows `pwd` and `ls` without approval, and allows reading reference samples, saved model files, and `/opt/course/docs/`. Direct reads of `.ipynb`, `.chat`, and private course data remain blocked so the coach uses live notebook MCP context. Generic file edits and shell commands other than `pwd`/`ls` still ask; direct `.ipynb` file edits are denied. The **Always allow** choice in a prompt lasts only for the current OpenCode session; these config rules persist across container restarts. OpenCode merges config sources, so project or inline config can override these defaults. They are not an enforced security boundary.
 
 Reference samples at `/home/keio/work/samples` are read-only. Jupyter notebooks, models, chats, and the local course evidence directory are inside the host-backed `workspace/` directory mounted at `/home/keio/work`. Do not edit reference examples in place. JupyterLab uses its normal notebook autosave interval, so a live MCP edit can be saved through the existing autosave behavior. After editing a `.sysml` file, load it again in a SysML notebook when needed:
 
@@ -117,7 +117,7 @@ make logs
 | Notebook tools cannot identify a notebook | Keep the target notebook open in JupyterLab and select its tab and a cell. The agent reads browser-live state rather than stale `.ipynb` disk contents. |
 | `%render` reports a missing view | Use the SysML v2 (OpenSysML) kernel and execute the model, view declaration, and `%load` prerequisite cells first. `%render` targets a declared view, not a package. |
 | Credentials disappear after restart | Keep the named `opencode-state` volume; do not run `docker compose down --volumes`. |
-| Jupyter MCP edits or executes without a separate prompt | This is a Step 1 limitation. Inspect the notebook and outputs; per-action preapproval is not implemented. |
+| Jupyter MCP tool still asks for approval | The course config auto-allows only `Jupyter_MCP_Server_execute_command`. Rebuild and restart after updating the image; other tools may still prompt. |
 | Course status shows `Offline / queued` | No endpoint/enrollment is configured, or the network is unavailable. | Check the status details and use **Sync now** when connected. Ask the instructor for an enrollment code if the course collector is enabled. |
 | Course status shows `Attention needed` | Enrollment expired/revoked or the collector rejected an upload. | Ask the instructor for a new one-time code. Queued local data remains available. |
 | SysML Design Coach or workflow command is absent | Image or OpenCode config is stale. | Run `make build`, then `make down` and `make up`. Run `make doctor` to inspect the installed runtime. |

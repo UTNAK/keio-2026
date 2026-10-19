@@ -91,7 +91,7 @@ const plugin = {
       const result = await showDialog({
         title: 'Course activity recording',
         body: new Widget({ node: body }),
-        buttons: [Dialog.cancelButton({ label: 'Close' }), Dialog.createButton({ label: 'Sync now', accept: true }), Dialog.createButton({ label: 'Enroll', accept: true }), Dialog.createButton({ label: 'Export local evidence', accept: true })]
+        buttons: [Dialog.cancelButton({ label: 'Close' }), Dialog.createButton({ label: 'Sync now', accept: true }), Dialog.createButton({ label: 'Enroll', accept: true }), Dialog.createButton({ label: 'Export local evidence', accept: true }), Dialog.createButton({ label: 'Export performance log', accept: true })]
       });
       if (!result.button.accept) return;
       const action = result.button.label;
@@ -127,6 +127,8 @@ const plugin = {
         }
       } else if (action === 'Export local evidence') {
         window.open(URLExt.join(settings.baseUrl, 'api/course-evidence/export'), '_blank', 'noopener');
+      } else if (action === 'Export performance log') {
+        window.open(URLExt.join(settings.baseUrl, 'api/course-evidence/performance-export'), '_blank', 'noopener');
       }
     }
     node.addEventListener('click', () => { void showStatusDialog(); });

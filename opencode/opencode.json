@@ -7,6 +7,20 @@
   "plugin": ["file:///opt/course/opencode/plugins/classroom-recorder.mjs"],
   "permission": {
     "*": "ask",
+    "Jupyter_MCP_Server_execute_command": "allow",
+    "read": {
+      "*": "ask",
+      "/home/keio/work/samples/**": "allow",
+      "/home/keio/work/models/**": "allow",
+      "/opt/course/docs/**": "allow",
+      "*.ipynb": "deny",
+      "**/*.ipynb": "deny",
+      "*.chat": "deny",
+      "**/*.chat": "deny",
+      "/home/keio/work/private-course-data/**": "deny",
+      "**/.env": "deny",
+      "**/.env.*": "deny"
+    },
     "edit": {
       "*": "ask",
       "*.ipynb": "deny",
@@ -23,8 +37,17 @@
       "feasibility-assessment": "allow",
       "*": "ask"
     },
-    "bash": "ask",
-    "external_directory": "ask"
+    "bash": {
+      "*": "ask",
+      "pwd": "allow",
+      "ls": "allow",
+      "ls *": "allow"
+    },
+    "external_directory": {
+      "*": "ask",
+      "/home/keio/work/**": "allow",
+      "/opt/course/docs/**": "allow"
+    }
   },
   "agent": {
     "sysml": {

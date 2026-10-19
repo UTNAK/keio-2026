@@ -215,6 +215,22 @@ class ExportHandler(JupyterHandler):
         self.finish(_store().export_jsonl())
 
 
+class PerformanceExportHandler(JupyterHandler):
+    @tornado.web.authenticated
+    def get(self) -> None:
+        path = _data_dir() / "opencode-performance.jsonl"
+        if path.is_symlink() or not path.is_file():
+            raise tornado.web.HTTPError(404, "No OpenCode performance measurements are available yet")
+        try:
+            content = path.read_bytes()
+        except OSError as error:
+            raise tornado.web.HTTPError(404, "No OpenCode performance measurements are available yet") from error
+        self.set_header("Content-Type", "application/x-ndjson; charset=utf-8")
+        self.set_header("Content-Disposition", 'attachment; filename="opencode-performance.jsonl"')
+        self.set_header("Cache-Control", "no-store")
+        self.finish(content)
+
+
 class DisclosureHandler(JupyterHandler):
     @tornado.web.authenticated
     def get(self) -> None:
@@ -322,6 +338,7 @@ def _load_jupyter_server_extension(serverapp: Any) -> None:
         (route("sync"), SyncNowHandler),
         (route("activity"), ActivityHandler),
         (route("export"), ExportHandler),
+        (route("performance-export"), PerformanceExportHandler),
         (route("disclosure"), DisclosureHandler),
     ])
     serverapp.log.info("Keio course evidence endpoints enabled; collector URL configured: %s", bool(os.environ.get("COURSE_COLLECTOR_URL")))

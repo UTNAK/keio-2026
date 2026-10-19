@@ -46,7 +46,7 @@ async function ensureIdentity(dataDir) {
   }
 }
 
-export async function ClassroomRecorder({ directory }) {
+export async function ClassroomRecorder({ directory, client }) {
   const dataDir = process.env.COURSE_DATA_DIR || '/home/keio/work/private-course-data';
   const identity = await ensureIdentity(dataDir);
   let questionBank = [];
@@ -55,13 +55,105 @@ export async function ClassroomRecorder({ directory }) {
     questionBank = Array.isArray(bank.questions) ? bank.questions : [];
   } catch {}
   const spoolDir = path.join(dataDir, 'spool');
+  const performanceLogPath = path.join(dataDir, 'opencode-performance.jsonl');
   await mkdir(spoolDir, { recursive: true, mode: 0o700 });
   const agentByMessage = new Map();
   const activeSkillBySession = new Map();
   const pendingQuestionBySession = new Map();
   const sessionStarted = new Set();
+  const performanceBySession = new Map();
   const queued = new Set();
   let writeChain = Promise.resolve();
+
+  async function logPerformance(client, message, extra) {
+    const record = {
+      timestamp_utc: new Date().toISOString(),
+      event: message,
+      ...extra,
+    };
+    try {
+      await appendFile(performanceLogPath, `${JSON.stringify(record)}\n`, { mode: 0o600 });
+    } catch {
+      // Keep performance logging best-effort and separate from classroom evidence.
+    }
+    try {
+      await client.app.log({
+        body: {
+          service: 'course-performance',
+          level: 'info',
+          message,
+          extra: record,
+        },
+      });
+    } catch {
+      // Diagnostics must not interrupt the ACP session if OpenCode logging fails.
+    }
+  }
+
+  function performanceState(sessionId) {
+    let state = performanceBySession.get(sessionId);
+    if (!state) {
+      state = {
+        startedAt: Date.now(),
+        firstAssistantTextAt: null,
+        assistantMessages: new Map(),
+        tools: new Map(),
+        permissions: new Map(),
+        permissionWaitMs: [],
+      };
+      performanceBySession.set(sessionId, state);
+    }
+    return state;
+  }
+
+  async function finishPerformanceTurn(client, sessionId, outcome = 'completed') {
+    const state = performanceBySession.get(sessionId);
+    if (!state) return;
+    const completedAt = Date.now();
+    const tools = [...state.tools.values()];
+    const assistantMessages = [...state.assistantMessages.values()];
+    await logPerformance(client, 'turn_summary', {
+      session_id: safeId(sessionId),
+      outcome,
+      started_at_utc: new Date(state.startedAt).toISOString(),
+      completed_at_utc: new Date(completedAt).toISOString(),
+      total_ms: completedAt - state.startedAt,
+      first_assistant_text_ms: state.firstAssistantTextAt == null
+        ? null : state.firstAssistantTextAt - state.startedAt,
+      timing_scope: 'OpenCode assistant-step timing includes agent/runtime overhead; provider-only HTTP timing is not exposed by the ACP plugin events',
+      assistant_step_count: assistantMessages.length,
+      assistant_steps: assistantMessages,
+      tool_call_count: tools.length,
+      jupyter_mcp_tool_call_count: tools.filter(tool => tool.name.startsWith('Jupyter_MCP_Server_')).length,
+      tool_calls: tools,
+      permission_wait_count: state.permissionWaitMs.length,
+      permission_wait_ms: state.permissionWaitMs,
+    });
+    performanceBySession.delete(sessionId);
+  }
+
+  function tokenMetrics(tokens) {
+    if (!tokens || typeof tokens !== 'object') return undefined;
+    const result = {};
+    for (const key of ['input', 'output', 'reasoning']) {
+      if (Number.isFinite(tokens[key])) result[key] = tokens[key];
+    }
+    if (tokens.cache && typeof tokens.cache === 'object') {
+      for (const key of ['read', 'write']) {
+        if (Number.isFinite(tokens.cache[key])) result[`cached_${key}`] = tokens.cache[key];
+      }
+    }
+    return Object.keys(result).length ? result : undefined;
+  }
+
+  function payloadBytes(value) {
+    if (value === undefined) return undefined;
+    try {
+      return Buffer.byteLength(JSON.stringify(value), 'utf8');
+    } catch {
+      return undefined;
+    }
+  }
 
   async function spool(event) {
     const file = path.join(spoolDir, `${safeId(event.session_id)}.jsonl`);
@@ -139,6 +231,95 @@ export async function ClassroomRecorder({ directory }) {
       const properties = event?.properties || {};
       const sessionId = properties.sessionID;
       if (!sessionId) return;
+      const now = Date.now();
+
+      if (type === 'message.updated') {
+        const info = properties.info;
+        if (info?.role === 'user' && info.id) {
+          const state = performanceState(sessionId);
+          state.startedAt = Number.isFinite(info.time?.created) ? info.time.created : now;
+        }
+        if (info?.role === 'assistant' && info.id) {
+          agentByMessage.set(info.id, info.agent || 'unknown');
+          const state = performanceBySession.get(sessionId);
+          if (state && info.time?.completed && !state.assistantMessages.has(info.id)) {
+            const createdAt = Number.isFinite(info.time?.created) ? info.time.created : now;
+            const step = {
+              provider: typeof info.providerID === 'string' ? cleanText(info.providerID, 80) : undefined,
+              model: typeof info.modelID === 'string' ? cleanText(info.modelID, 120) : undefined,
+              elapsed_ms: Math.max(0, info.time.completed - createdAt),
+              time_to_first_text_ms: state.assistantTextByMessage?.get(info.id) == null
+                ? null : Math.max(0, state.assistantTextByMessage.get(info.id) - createdAt),
+              tokens: tokenMetrics(info.tokens),
+              cost: Number.isFinite(info.cost) ? info.cost : undefined,
+            };
+            for (const key of Object.keys(step)) if (step[key] === undefined) delete step[key];
+            state.assistantMessages.set(info.id, step);
+          }
+        }
+        return;
+      }
+
+      if (type === 'session.idle' || type === 'session.error') {
+        await finishPerformanceTurn(client, sessionId, type === 'session.idle' ? 'completed' : 'error');
+        return;
+      }
+
+      if (type === 'permission.asked') {
+        const requestId = properties.requestID || event.id;
+        if (requestId) performanceState(sessionId).permissions.set(requestId, now);
+        return;
+      }
+
+      if (type === 'permission.replied') {
+        const requestId = properties.requestID || event.id;
+        const state = performanceBySession.get(sessionId);
+        const startedAt = state?.permissions.get(requestId);
+        if (state && startedAt != null) {
+          state.permissionWaitMs.push(Math.max(0, now - startedAt));
+          state.permissions.delete(requestId);
+        }
+      }
+
+      if (type === 'message.part.updated') {
+        const part = properties.part;
+        if (!part) return;
+        const state = performanceBySession.get(sessionId);
+        if (part.type === 'text' && state && !part.synthetic && !part.ignored) {
+          if (state.firstAssistantTextAt == null) state.firstAssistantTextAt = now;
+          if (!state.assistantTextByMessage) state.assistantTextByMessage = new Map();
+          if (part.messageID && !state.assistantTextByMessage.has(part.messageID)) {
+            state.assistantTextByMessage.set(part.messageID, now);
+          }
+        }
+        if (part.type === 'tool' && state && toolAllowlist.has(part.tool)) {
+          const callId = part.callID || part.id;
+          const status = part.state?.status;
+          if (callId && (status === 'running' || status === 'pending') && !state.tools.has(callId)) {
+            state.tools.set(callId, {
+              name: cleanText(part.tool, 100),
+              startedAt: now,
+              outcome: 'pending',
+              input_bytes: payloadBytes(part.state?.input),
+            });
+          }
+          if (callId && (status === 'completed' || status === 'error')) {
+            const current = state.tools.get(callId) || {
+              name: cleanText(part.tool, 100),
+              startedAt: now,
+              input_bytes: payloadBytes(part.state?.input),
+            };
+            state.tools.set(callId, {
+              name: current.name,
+              elapsed_ms: Math.max(0, now - current.startedAt),
+              outcome: status === 'completed' ? 'success' : 'error',
+              input_bytes: current.input_bytes ?? payloadBytes(part.state?.input),
+              output_bytes: payloadBytes(part.state?.output),
+            });
+          }
+        }
+      }
+
       if (type === 'session.created' && !sessionStarted.has(sessionId)) {
         sessionStarted.add(sessionId);
         await emit(base('class.session.started', 'opencode', `session:${sessionId}:created`, sessionId, { started_at_ms: properties.info?.time?.created || Date.now() }));
@@ -154,11 +335,6 @@ export async function ClassroomRecorder({ directory }) {
       }
       if (type === 'permission.replied') {
         await emit(base('permission.decided', 'opencode', `permission:${properties.requestID || event.id}`, sessionId, { decision: properties.reply }));
-        return;
-      }
-      if (type === 'message.updated') {
-        const info = properties.info;
-        if (info?.role === 'assistant' && info.id && info.agent) agentByMessage.set(info.id, info.agent);
         return;
       }
       if (type !== 'message.part.updated') return;
