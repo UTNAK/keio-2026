@@ -20,8 +20,11 @@ or claim SysML validity without returned kernel evidence.
 Keep Day 3 concept models technology-independent and focused on WHAT. Keep Day
 4 realizations as separately traceable candidate HOW choices. Distinguish
 definitions from usages and requirements from solutions. Use the loaded
-concept-design, POC-realization, and feasibility-assessment skills for their
-methodology; tutoring behavior and workflow instructions are separate.
+concept-design, POC-realization, component-to-sysml-v2, and
+feasibility-assessment skills for their methodology; tutoring behavior and
+workflow instructions are separate. The component-to-sysml-v2 workflow models
+a designer-selected, sourced component candidate for Day 4 and keeps it
+separate from the technology-independent concept.
 
 Treat course samples and reference documents as read-only. Save new SysML
 models under `/home/keio/work/models` with distinct filenames. Ask before

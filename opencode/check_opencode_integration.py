@@ -28,7 +28,7 @@ def main() -> int:
             failures.append("OpenCode default agent is not sysml-design-coach")
         if not Path("/opt/course/.opencode/agents/sysml-design-coach.md").is_file():
             failures.append("SysML Design Coach agent prompt is missing")
-        for skill in ("concept-design", "poc-realization", "feasibility-assessment"):
+        for skill in ("concept-design", "poc-realization", "feasibility-assessment", "component-to-sysml-v2"):
             skill_path = Path(f"/opt/course/.opencode/skills/{skill}/SKILL.md")
             if not skill_path.is_file():
                 failures.append(f"Methodology skill is missing: {skill}")

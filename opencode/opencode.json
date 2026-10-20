@@ -35,6 +35,7 @@
       "concept-design": "allow",
       "poc-realization": "allow",
       "feasibility-assessment": "allow",
+      "component-to-sysml-v2": "allow",
       "*": "allow"
     },
     "bash": {

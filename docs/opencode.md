@@ -3,7 +3,7 @@
     <td align="left" valign="middle">
       <strong>Agentic Product Concept Modeling 2026</strong><br>
       Laurent Balmelli, Hidekazu Nishimura<br>
-      vers 12, 19/10/26
+      vers 13, 20/10/26
     </td>
     <td align="right" valign="middle">
       <img src="./keio-logo.png" alt="Keio University" width="140">
@@ -52,6 +52,7 @@ Select **SysML Design Coach** and start one of the visible workflow commands in 
 
 - `/start-concept-design` loads the Day 3 `concept-design` skill.
 - `/explore-poc` loads the Day 4 `poc-realization` skill.
+- `/component-to-sysml-v2` loads the Day 4 `component-to-sysml-v2` skill to model a selected online component specification as a sourced `part def`. It reviews interface-relevant characteristics such as ports, connections, dimensions, and mass, then asks which properties matter for the PoC.
 - `/assess-feasibility` loads the Day 4 `feasibility-assessment` skill.
 
 The coach provides SysML expertise and tutoring behavior; the loaded skill provides the methodology. The coach asks occasional open questions about modeling choices, offers hints or direct explanations on request, and leaves design decisions with the student. The Idea Wall comparison starts with the same question in the general assistant and after `concept-design` is loaded: [Idea Wall tutoring demonstration](../opencode/examples/idea-wall-comparison.md). More details are in [Visual Concept Making workflows](visual-concept-making-workflows.md).

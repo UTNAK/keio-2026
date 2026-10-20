@@ -3,7 +3,7 @@
     <td align="left" valign="middle">
       <strong>Agentic Product Concept Modeling 2026</strong><br>
       Laurent Balmelli, Hidekazu Nishimura<br>
-      vers 4, 19/10/26
+      vers 5, 20/10/26
     </td>
     <td align="right" valign="middle">
       <img src="./docs/keio-logo.png" alt="Keio University" width="140">
@@ -179,7 +179,7 @@ In both guides, commands beginning with `make`, `docker`, or `git` are run in th
 
 ## Use the SysML Design Coach and skills
 
-Open the native **Chat** panel in JupyterLab, select **SysML Design Coach**, and authenticate with `make opencode-auth` if you have not already. Choose an authenticated provider and model in Jupyter AI. Start the Day 3 concept workflow with `/start-concept-design`; use `/explore-poc` for Day 4 candidate realizations and `/assess-feasibility` to compare evidence. These entry points load the matching course skill.
+Open the native **Chat** panel in JupyterLab, select **SysML Design Coach**, and authenticate with `make opencode-auth` if you have not already. Choose an authenticated provider and model in Jupyter AI. Start the Day 3 concept workflow with `/start-concept-design`; use `/explore-poc` for Day 4 candidate realizations, `/component-to-sysml-v2` to model a selected component specification as a sourced `part def`, and `/assess-feasibility` to compare evidence. The component workflow reviews interface-relevant properties such as ports, connections, dimensions, and mass with you, then models the properties you select. These entry points load the matching course skill.
 
 The coach provides the personalized tutoring role: it asks relevant open questions, offers graduated hints, and asks occasional comprehension questions. You make and explain the design decisions; the coach preserves your answers and does not assign automatic grades or mastery scores. The skills provide the step-by-step methodology. On Day 3, keep the concept technology-independent and describe **what** the product must do. On Day 4, model candidate **how** realizations separately and trace them back to the concept and its criteria. See [Visual Concept Making workflows](docs/visual-concept-making-workflows.md) for the full workflow.
 
