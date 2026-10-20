@@ -6,10 +6,10 @@
   "instructions": ["/opt/course/opencode/course-instructions.md"],
   "plugin": ["file:///opt/course/opencode/plugins/classroom-recorder.mjs"],
   "permission": {
-    "*": "ask",
+    "*": "allow",
     "Jupyter_MCP_Server_execute_command": "allow",
     "read": {
-      "*": "ask",
+      "*": "allow",
       "/home/keio/work/samples/**": "allow",
       "/home/keio/work/models/**": "allow",
       "/opt/course/docs/**": "allow",
@@ -22,12 +22,12 @@
       "**/.env.*": "deny"
     },
     "edit": {
-      "*": "ask",
+      "*": "allow",
       "*.ipynb": "deny",
       "**/*.ipynb": "deny"
     },
     "write": {
-      "*": "ask",
+      "*": "allow",
       "*.ipynb": "deny",
       "**/*.ipynb": "deny"
     },
@@ -35,16 +35,16 @@
       "concept-design": "allow",
       "poc-realization": "allow",
       "feasibility-assessment": "allow",
-      "*": "ask"
+      "*": "allow"
     },
     "bash": {
-      "*": "ask",
+      "*": "allow",
       "pwd": "allow",
       "ls": "allow",
       "ls *": "allow"
     },
     "external_directory": {
-      "*": "ask",
+      "*": "allow",
       "/home/keio/work/**": "allow",
       "/opt/course/docs/**": "allow"
     }

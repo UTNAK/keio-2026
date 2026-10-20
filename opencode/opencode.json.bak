@@ -1,0 +1,64 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "default_agent": "sysml-design-coach",
+  "autoupdate": false,
+  "share": "disabled",
+  "instructions": ["/opt/course/opencode/course-instructions.md"],
+  "plugin": ["file:///opt/course/opencode/plugins/classroom-recorder.mjs"],
+  "permission": {
+    "*": "ask",
+    "Jupyter_MCP_Server_execute_command": "allow",
+    "read": {
+      "*": "ask",
+      "/home/keio/work/samples/**": "allow",
+      "/home/keio/work/models/**": "allow",
+      "/opt/course/docs/**": "allow",
+      "*.ipynb": "deny",
+      "**/*.ipynb": "deny",
+      "*.chat": "deny",
+      "**/*.chat": "deny",
+      "/home/keio/work/private-course-data/**": "deny",
+      "**/.env": "deny",
+      "**/.env.*": "deny"
+    },
+    "edit": {
+      "*": "ask",
+      "*.ipynb": "deny",
+      "**/*.ipynb": "deny"
+    },
+    "write": {
+      "*": "ask",
+      "*.ipynb": "deny",
+      "**/*.ipynb": "deny"
+    },
+    "skill": {
+      "concept-design": "allow",
+      "poc-realization": "allow",
+      "feasibility-assessment": "allow",
+      "*": "ask"
+    },
+    "bash": {
+      "*": "ask",
+      "pwd": "allow",
+      "ls": "allow",
+      "ls *": "allow"
+    },
+    "external_directory": {
+      "*": "ask",
+      "/home/keio/work/**": "allow",
+      "/opt/course/docs/**": "allow"
+    }
+  },
+  "agent": {
+    "sysml": {
+      "description": "Course SysML v2 modeling assistant for live Jupyter notebooks",
+      "mode": "primary",
+      "prompt": "{file:/opt/course/opencode/sysml-agent.txt}"
+    },
+    "sysml-design-coach": {
+      "description": "Personalized SysML v2 design tutor for concept design, PoC realization, and feasibility learning",
+      "mode": "primary",
+      "prompt": "{file:/opt/course/.opencode/agents/sysml-design-coach.md}"
+    }
+  }
+}
